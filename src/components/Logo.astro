@@ -1,0 +1,18 @@
+---
+interface Props {
+  size?: number;
+}
+const { size = 22 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg-o" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb347" />
+      <stop offset="0.55" stop-color="#ff6a1a" />
+      <stop offset="1" stop-color="#df2208" />
+    </linearGradient>
+  </defs>
+  <circle cx="12" cy="12" r="8.5" fill="none" stroke="url(#lg-o)" stroke-width="4"></circle>
+  <circle cx="17.5" cy="6.5" r="2.2" fill="#fff"></circle>
+</svg>

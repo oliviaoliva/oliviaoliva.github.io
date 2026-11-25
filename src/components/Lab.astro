@@ -1,0 +1,433 @@
+---
+import { getCollection } from 'astro:content';
+import { stack } from '../data/work';
+import Logo from './Logo.astro';
+
+const entries = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
+);
+const statusLabel = { live: 'Live', wip: 'In progress', research: 'Research', idea: 'Idea' } as const;
+const colors = ['#ff6a1a', '#b150a2', '#3ddc84', '#4f7bff', '#f5a524'];
+
+const projects = entries.map((p, i) => ({
+  id: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  year: p.data.year,
+  status: statusLabel[p.data.status],
+  tags: p.data.tags,
+  links: p.data.links,
+  color: colors[i % colors.length],
+}));
+const first = projects[0];
+---
+
+<section id="lab" class="lab">
+  <div class="frame">
+    <div class="inner">
+      <header class="head" data-reveal>
+        <div>
+          <span class="label">Lab</span>
+          <h2 class="h-section">Personal experiments<br /><span>built in the open</span></h2>
+        </div>
+        <p class="muted">Side projects where I test ideas and push what AI can do. New ones land here as I ship them.</p>
+      </header>
+
+      <div class="window" data-reveal data-lab>
+        <div class="titlebar">
+          <div class="brand"><Logo size={18} /> olivia.lab</div>
+          <div class="search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            Search experiments…
+            <kbd>⌘K</kbd>
+          </div>
+          <div class="avatars" title="Portuguese · English · Spanish">
+            <span style="background:#f5d0a9">PT</span><span style="background:#c8d4ff">EN</span><span style="background:#e5c4f0">ES</span>
+          </div>
+        </div>
+
+        <div class="body">
+          <aside class="side">
+            <nav>
+              <a class="on">◎ Experiments</a>
+              <a href="#work">⌘ Selected work</a>
+              <a href="#about">◌ About</a>
+              <a href="#contact">✉ Contact</a>
+            </nav>
+            <div class="list-title">⌄ All experiments</div>
+            <ul>
+              {
+                projects.map((p, i) => (
+                  <li>
+                    <button type="button" class:list={['item', { on: i === 0 }]} data-item={i}>
+                      <i style={`background:${p.color}`} />
+                      <span>{p.title}</span>
+                      <em>{p.year}</em>
+                    </button>
+                  </li>
+                ))
+              }
+              <li>
+                <span class="item ghost"><i></i><span>Next experiment</span><em>soon</em></span>
+              </li>
+            </ul>
+          </aside>
+
+          <div class="main">
+            {
+              first ? (
+                <>
+                  <div class="preview" data-preview style={`--c:${first.color}`}>
+                    <span class="status" data-status>● {first.status}</span>
+                    <h3 data-title>{first.title}</h3>
+                  </div>
+                  <div class="meta">
+                    <p data-desc>{first.description}</p>
+                    <div class="tags" data-tags>
+                      {first.tags.map((t) => (
+                        <span class="chip">{t}</span>
+                      ))}
+                    </div>
+                    <a href={`/projects/${first.id}/`} class="btn btn-light" data-open>
+                      Open project →
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <p class="muted">No experiments yet. Add one in src/content/projects.</p>
+              )
+            }
+          </div>
+
+          <aside class="right">
+            <div class="right-head">
+              <span>Toolbox</span>
+              <span class="chip">2026</span>
+            </div>
+            {
+              stack.map((g) => (
+                <div class="group">
+                  <span class="gname">{g.group}</span>
+                  <div class="chips">
+                    {g.items.map((s) => (
+                      <span class="chip">{s}</span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="lab-data" set:html={JSON.stringify(projects)} />
+</section>
+
+<style>
+  .lab {
+    border-top: 1px solid var(--line);
+  }
+  .lab .inner {
+    padding-block: clamp(80px, 10vw, 130px);
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .head > div {
+    display: grid;
+    gap: 16px;
+  }
+  .head p {
+    max-width: 36ch;
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .window {
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    background: #0c0c0e;
+    overflow: hidden;
+    box-shadow: 0 60px 140px -40px rgba(255, 106, 26, 0.25);
+  }
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 52px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .search {
+    flex: 1;
+    max-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
+    background: #17171a;
+    color: var(--dim);
+    font-size: 12px;
+  }
+  kbd {
+    margin-left: auto;
+    font: 10px var(--mono);
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: #222;
+    color: var(--muted);
+  }
+  .avatars {
+    margin-left: auto;
+    display: flex;
+  }
+  .avatars span {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font: 600 9px var(--sans);
+    color: #111;
+    border: 2px solid #0c0c0e;
+    margin-left: -7px;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 460px;
+  }
+  .side,
+  .right {
+    padding: 14px;
+  }
+  .side {
+    border-bottom: 1px solid var(--line);
+  }
+  nav {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 18px;
+  }
+  nav a {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  nav a:hover {
+    color: #fff;
+  }
+  nav a.on {
+    background: #1a1a1d;
+    color: #fff;
+  }
+  .list-title {
+    font-size: 12px;
+    color: var(--dim);
+    padding: 0 10px 8px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font: 13px var(--sans);
+    text-align: left;
+    cursor: pointer;
+  }
+  .item:hover,
+  .item.on {
+    background: #1a1a1d;
+    color: #fff;
+  }
+  .item i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: #333;
+  }
+  .item span {
+    flex: 1;
+  }
+  .item em {
+    font: 10px var(--mono);
+    font-style: normal;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #222;
+    color: var(--muted);
+  }
+  .ghost {
+    cursor: default;
+    opacity: 0.5;
+  }
+  .ghost:hover {
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .main {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preview {
+    position: relative;
+    min-height: 260px;
+    border-radius: 6px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    background:
+      radial-gradient(70% 90% at 15% 110%, var(--c), transparent 70%),
+      radial-gradient(60% 70% at 95% 10%, rgba(64, 71, 161, 0.9), transparent 70%),
+      radial-gradient(50% 60% at 90% 100%, rgba(177, 80, 162, 0.8), transparent 70%),
+      #121216;
+    transition: background 0.5s;
+  }
+  .preview .status {
+    align-self: flex-start;
+    font: 500 10px var(--mono);
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+  }
+  .preview h3 {
+    margin: 0;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+    color: #fff;
+  }
+  .meta {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+  }
+  .meta p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 56ch;
+  }
+  .tags,
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .right {
+    border-top: 1px solid var(--line);
+    display: grid;
+    align-content: start;
+    gap: 18px;
+  }
+  .right-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .group {
+    display: grid;
+    gap: 8px;
+  }
+  .gname {
+    font-size: 12px;
+    color: var(--dim);
+  }
+
+  @media (min-width: 900px) {
+    .body {
+      grid-template-columns: 220px 1fr 260px;
+    }
+    .side {
+      border-bottom: 0;
+      border-right: 1px solid var(--line);
+    }
+    .right {
+      border-top: 0;
+      border-left: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 640px) {
+    .brand {
+      width: auto;
+    }
+    .search,
+    .avatars {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  type Project = {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    tags: string[];
+    color: string;
+  };
+  const root = document.querySelector<HTMLElement>('[data-lab]');
+  const data: Project[] = JSON.parse(document.getElementById('lab-data')?.textContent || '[]');
+
+  if (root && data.length) {
+    const q = (s: string) => root.querySelector<HTMLElement>(s)!;
+    root.querySelectorAll<HTMLButtonElement>('[data-item]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const p = data[Number(btn.dataset.item)];
+        root.querySelectorAll('[data-item]').forEach((b) => b.classList.toggle('on', b === btn));
+        q('[data-preview]').style.setProperty('--c', p.color);
+        q('[data-status]').textContent = `● ${p.status}`;
+        q('[data-title]').textContent = p.title;
+        q('[data-desc]').textContent = p.description;
+        q('[data-tags]').innerHTML = p.tags.map((t) => `<span class="chip">${t.replace(/</g, '&lt;')}</span>`).join('');
+        (q('[data-open]') as HTMLAnchorElement).href = `/projects/${p.id}/`;
+      }),
+    );
+  }
+</script>

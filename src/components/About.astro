@@ -1,0 +1,170 @@
+---
+import { stats } from '../data/work';
+
+// Grade de quadrados ao fundo; alguns "acesos" (laranja/verde), como na referência
+const COLS = 14;
+const ROWS = 7;
+const lit: Record<number, 'o' | 'g'> = { 1: 'o', 5: 'o', 7: 'o', 14: 'o', 18: 'o', 22: 'g', 33: 'o', 36: 'g', 47: 'o', 52: 'g', 61: 'o', 69: 'o', 74: 'g', 83: 'o', 90: 'o' };
+const cells = Array.from({ length: COLS * ROWS }, (_, i) => lit[i] ?? '');
+---
+
+<section id="about" class="about">
+  <div class="frame">
+    <div class="statement">
+      <div class="squares" aria-hidden="true" style={`--cols:${COLS}`}>
+        {cells.map((c, i) => <i class={c} style={`--d:${(i * 37) % 10}`} />)}
+      </div>
+
+      <div class="content inner">
+        <span class="label">About</span>
+        <div class="text" data-reveal>
+          <p class="big">
+            I turn slow, manual processes into AI systems that just work,{' '}
+            <span>from the first prototype to production, with a human in the loop where it matters.</span>
+          </p>
+          <p class="mono small">
+            LLM pipelines · AI agents · conversational assistants · computer vision · AWS. Trilingual (PT · EN · ES).
+            Five years of AR/VR and accessibility research before that.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats inner">
+      {
+        stats.map((s) => (
+          <div class="stat" data-reveal>
+            <span class="mono">{s.label}</span>
+            <strong>{s.value}</strong>
+            <span class="note">{s.note}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .statement {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(80px, 12vw, 150px) 0;
+  }
+  .squares {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    gap: 10px;
+    padding: 10px;
+    mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 100%);
+  }
+  .squares i {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+  }
+  .squares i.o {
+    border-color: rgba(245, 165, 36, 0.35);
+    animation: glow 5s ease-in-out infinite;
+    animation-delay: calc(var(--d) * -0.5s);
+  }
+  .squares i.g {
+    border-color: rgba(61, 220, 132, 0.25);
+    animation: glow 6s ease-in-out infinite;
+    animation-delay: calc(var(--d) * -0.6s);
+  }
+  @keyframes glow {
+    50% {
+      opacity: 0.25;
+    }
+  }
+  .content {
+    position: relative;
+    display: grid;
+    gap: 32px;
+  }
+  .big {
+    font-size: clamp(26px, 3.3vw, 40px);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.035em;
+    margin: 0;
+    max-width: 22em;
+  }
+  .big span {
+    color: var(--dim);
+  }
+  .small {
+    max-width: 48ch;
+    margin: 28px 0 0;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--dim);
+  }
+  @media (min-width: 900px) {
+    .content {
+      grid-template-columns: 180px 1fr;
+    }
+    .label {
+      align-self: start;
+      margin-top: 14px;
+    }
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 40px 24px;
+    padding-bottom: clamp(80px, 10vw, 120px);
+  }
+  .stat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 20px;
+  }
+  .stat::before,
+  .stat::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 2px;
+    border-radius: 2px;
+  }
+  .stat::before {
+    top: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .stat::after {
+    bottom: 0;
+    height: 52%;
+    background: #fff;
+  }
+  .stat .mono {
+    font-size: 11px;
+    color: var(--ink);
+    max-width: 16ch;
+    line-height: 1.5;
+  }
+  strong {
+    margin-top: 28px;
+    font-size: clamp(48px, 5vw, 64px);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .note {
+    font-size: 13px;
+    color: var(--dim);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .squares i {
+      animation: none !important;
+    }
+  }
+</style>

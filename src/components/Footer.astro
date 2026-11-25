@@ -1,0 +1,84 @@
+---
+import Logo from './Logo.astro';
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="frame">
+    <div class="top inner">
+      <a href="/" class="brand"><Logo size={20} /> Olivia Oliva</a>
+      <nav>
+        <a href="/#work">Work</a>
+        <a href="/#about">About</a>
+        <a href="/#lab">Lab</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="word" aria-hidden="true">Olivia Oliva</div>
+    <div class="bottom inner mono">
+      <span>© {year} Olivia Oliva</span>
+      <span>AI Engineer · Rio de Janeiro</span>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--line);
+  }
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-block: 40px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  nav {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+  }
+  nav a,
+  .bottom a {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  nav a:hover,
+  .bottom a:hover {
+    color: #fff;
+  }
+  .word {
+    font-size: clamp(64px, 15.5vw, 186px);
+    font-weight: 600;
+    letter-spacing: -0.065em;
+    line-height: 0.8;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-top: 10px;
+  }
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 24px;
+    padding-block: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 10px;
+    color: var(--dim);
+  }
+</style>

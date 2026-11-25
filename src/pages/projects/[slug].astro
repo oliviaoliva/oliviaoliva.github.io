@@ -1,0 +1,125 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, year, tags, links, status } = project.data;
+---
+
+<Base title={`${title} — Olivia Oliva`} description={description}>
+  <div class="frame">
+    <header class="stage">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="inner">
+        <a href="/#lab" class="back">← Back to lab</a>
+        <div class="meta mono">
+          <span>{year}</span><span>·</span><span class="st">{status}</span>
+        </div>
+        <h1>{title}</h1>
+        <p class="desc">{description}</p>
+        <div class="row">
+          <div class="tags">{tags.map((t) => <span class="chip">{t}</span>)}</div>
+          <div class="links">
+            {links.github && <a class="btn btn-glass" href={links.github} target="_blank" rel="noopener">GitHub ↗</a>}
+            {links.demo && <a class="btn btn-light" href={links.demo} target="_blank" rel="noopener">Live demo ↗</a>}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <article class="inner prose">
+      <Content />
+    </article>
+  </div>
+</Base>
+
+<style>
+  .frame {
+    margin-top: 64px;
+  }
+  .stage {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding-block: clamp(56px, 8vw, 100px);
+    border-bottom: 1px solid var(--line);
+  }
+  .glow {
+    position: absolute;
+    inset: -10%;
+    z-index: -1;
+    background:
+      radial-gradient(40% 60% at 0% 100%, #ff6a1a, transparent 70%),
+      radial-gradient(40% 60% at 100% 0%, #4047a1, transparent 70%),
+      radial-gradient(30% 50% at 90% 100%, #b150a2, transparent 70%);
+    filter: blur(50px);
+    opacity: 0.6;
+  }
+  .back {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover {
+    color: #fff;
+  }
+  .meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 40px;
+    color: var(--muted);
+  }
+  .st {
+    color: var(--gold);
+  }
+  h1 {
+    font-size: clamp(52px, 9vw, 120px);
+    font-weight: 600;
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+    margin: 14px 0 20px;
+  }
+  .desc {
+    font-size: clamp(16px, 1.8vw, 20px);
+    max-width: 50ch;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 28px;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .tags,
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .prose {
+    max-width: calc(68ch + 2 * var(--pad));
+    padding-block: 40px 120px;
+  }
+  .prose :global(h2) {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    margin: 48px 0 12px;
+  }
+  .prose :global(p),
+  .prose :global(li) {
+    color: var(--muted);
+  }
+  .prose :global(strong) {
+    color: #fff;
+    font-weight: 600;
+  }
+</style>
